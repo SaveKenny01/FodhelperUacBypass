@@ -61,7 +61,7 @@ Process.Start(startInfo);
 
 Despite a clear reaction from the antivirus software, this does not hinder the program's operation. During the detection process, the antivirus flags `fodhelper.exe` itself as the culprit and takes no further action, allowing the program to successfully obtain the required privileges.
 
-![sd](.img/UacImg.png)
+![](img/UacImg.png)
 
 ---
 
