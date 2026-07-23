@@ -1,24 +1,22 @@
-# FodhelperUacBypass (FodhelperUacBypass)
+# FodhelperUacBypass
 
-Tested on: (проверено на:)
-* Windows 10 (windows 10)
-* Windows 11 (windows 11)
-
----
-
-## How It Works (Как это работает:)
-
-1. **Trusted Intermediary (`autoElevate`):** The `fodhelper.exe` utility is officially signed by Microsoft and features a built-in auto-elevate manifest. (Доверенный посредник (`autoElevate`): Утилита `fodhelper.exe` официально подписана Microsoft и имеет встроенный манифест автоматического повышения прав.) When an administrator user runs it, Windows **does not display a UAC prompt**, but immediately grants the process a High Integrity level. (Когда пользователь-администратор запускает её, Windows **не выводит окно UAC**, а сразу выдает процессу высокий уровень целостности (*High Integrity*).)
-
-2. **Searching for Instructions in HKCU:** Upon startup, `fodhelper.exe` attempts to open system settings and accesses the registry. (Поиск инструкций в HKCU: При запуске `fodhelper.exe` пытается открыть системные параметры и обращается к реестру.) Due to the specific nature of the Windows hierarchy, the system first looks for configurations in the current user's hive (`HKEY_CURRENT_USER`), and only then in the global hive (`HKEY_LOCAL_MACHINE`). (Из-за особенностей иерархии Windows, система сначала ищет настройки в кусте текущего пользователя (`HKEY_CURRENT_USER`), и только потом — в глобальном (`HKEY_LOCAL_MACHINE`).)
-
-3. **Class Association Hijacking:** The program intercepts this request by creating the structure `Software\Classes\ms-settings\Shell\Open\command` within the user registry. (Подмена ассоциации класса: Программа перехватывает этот запрос, создавая в пользовательском реестре структуру `Software\Classes\ms-settings\Shell\Open\command`.) 
-
-4. **Execution with Inherited Privileges:** Instead of opening the default settings, `fodhelper.exe` reads the path to our program from the created key and executes it. (Выполнение с унаследованными правами: Вместо открытия штатных настроек, `fodhelper.exe` считывает из созданного ключа путь к нашей программе и запускает её.) Since `fodhelper.exe` itself already possesses administrative privileges, its new child process **inherits this high integrity level**, successfully bypassing the UAC protection barrier. (Поскольку сам `fodhelper.exe` уже обладает правами администратора, его новый дочерний процесс **наследует этот высокий уровень прав**, успешно обходя защитный барьер UAC.)
+Tested on:
+* Windows 10 
+* Windows 11 
 
 ---
 
-## Technical Details (Подробнее:)
+## How It Works 
+
+1. **Trusted Intermediary (`autoElevate`):** The `fodhelper.exe` utility is officially signed by Microsoft and features a built-in auto-elevate manifest. When an administrator user runs it, Windows **does not display a UAC prompt**, but immediately grants the process a High Integrity level.
+
+2. **Searching for Instructions in HKCU:** Upon startup, `fodhelper.exe` attempts to open system settings and accesses the registry. Due to the specific nature of the Windows hierarchy, the system first looks for configurations in the current user's hive (`HKEY_CURRENT_USER`), and only then in the global hive (`HKEY_LOCAL_MACHINE`).
+
+3. **Class Association Hijacking:** The program intercepts this request by creating the structure `Software\Classes\ms-settings\Shell\Open\command` within the user registry. 
+4. **Execution with Inherited Privileges:** Instead of opening the default settings, `fodhelper.exe` reads the path to our program from the created key and executes it. Since `fodhelper.exe` itself already possesses administrative privileges, its new child process **inherits this high integrity level**, successfully bypassing the UAC protection barrier.
+---
+
+## Technical Details 
 
 ### 1. Current Security Context Check (1. Проверка текущего контекста безопасности)
 At startup, the application verifies its current security token. (При старте приложение проверяет свой текущий токен безопасности.) If the program is already running with administrative privileges, execution proceeds directly to the target payload. (Если программа уже запущена с правами администратора, выполнение переходит к целевой нагрузке.) If it has standard privileges, the UAC bypass chain is initiated. (Если права обычные — инициируется цепочка обхода UAC.)
